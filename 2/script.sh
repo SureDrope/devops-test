@@ -6,12 +6,12 @@ TEMPLATE="%-10s%-20s%-6s%-6s%-10s%-10s%-10s\n"
 
 main() {
     clear
-    stty -echo # Disable echoing of input characters
-    stty -icanon # Disable line buffering (raw mode)
+    stty -echo # disables echoing of input characters
+    stty -icanon # disables line buffering (raw mode)
     tput civis # makes cursor invisible
     tput rev # white background 
     printf "$TEMPLATE" "PID" "COMMAND" "STATE" "CPU%" "VIRT" "UTIME" "STIME"
-    tput sgr0 # removes background color
+    tput sgr0 # removes white background
 
     while true; do
         tput cup 1 0
@@ -36,7 +36,7 @@ get_process_info() {
         state="${stat[2]}"
         utime="${stat[13]}"
         stime="${stat[14]}"
-        cpu_usage=$(get_cpu_usage ${stat[13]} ${stat[14]} ${stat[21]})
+        cpu_usage=$(get_cpu_usage "${stat[13]}" "${stat[14]}" "${stat[21]}")
         vm_size=$( convert_bytes_to_mbytes "${stat[22]}" )
 
         printf "$TEMPLATE" "$pid" "$comm" "$state" "$cpu_usage" "$vm_size" "$utime" "$stime"
@@ -60,12 +60,12 @@ get_cpu_usage() {
         echo "0"
         return 1
     fi
-    let process_utime_sec="$process_utime / $clk_tck"
-    let process_stime_sec="$process_stime / $clk_tck"
-    let process_starttime_sec="$process_starttime / $clk_tck"
-    let process_elapsed_sec="$system_uptime_sec - $process_starttime_sec"
-    let process_usage_sec="$process_utime_sec + $process_stime_sec"
-    let process_usage="$process_usage_sec * 100 / $process_elapsed_sec"
+    process_utime_sec=$(( process_utime / clk_tck ))
+    process_stime_sec=$(( process_stime / clk_tck ))
+    process_starttime_sec=$(( process_starttime / clk_tck ))
+    process_elapsed_sec=$(( system_uptime_sec - process_starttime_sec ))
+    process_usage_sec=$(( process_utime_sec + process_stime_sec ))
+    process_usage=$(( process_usage_sec * 100 / process_elapsed_sec ))
 
     echo "${process_usage}"
 }
