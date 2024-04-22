@@ -1,0 +1,5 @@
+subdomain.example.com, 127.0.0.1
+subdomain2.example.com, 127.0.0.2
+subdomain3.example.com, 127.1.0.2
+subdomain3.google.cqweuqw1, 242.1.0.2
+subsubdomain.subdomain.aaaaa.bbb, 127.0.0.1
